@@ -12,5 +12,5 @@ func ApiValidation(ctx *fiber.Ctx) error {
 	if os.Getenv("API_KEY") != common.GetReqHeader(ctx, "X-Api-Key") {
 		return errors.New("not allowed")
 	}
-	return nil
+	return ctx.Next()
 }

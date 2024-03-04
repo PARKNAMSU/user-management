@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/PARKNAMSU/user-management/src/middleware"
+	v1 "github.com/PARKNAMSU/user-management/src/router/v1"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )
@@ -45,14 +45,14 @@ func AppInit() {
 		ctx.Accepts("text/plain", "application/json") // "application/json", due to quality
 		ctx.Accepts("image/png")                      // ""
 		ctx.Accepts("png")                            // "", due to */* without q factor 0 is Not Acceptable
-		return nil
+		return ctx.Next()
 	})
 
-	app.Get("/check", func(c *fiber.Ctx) error {
-		return c.SendString("alive")
+	app.Get("/health/check", func(ctx *fiber.Ctx) error {
+		return ctx.SendString("alive")
 	})
 
-	app.Use(middleware.ApiValidation)
+	v1.Routing(app)
 
 	log.Println(port)
 

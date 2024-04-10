@@ -2,19 +2,17 @@ package src
 
 import (
 	"errors"
-	"fmt"
 	"log"
-	"os"
 
+	"github.com/PARKNAMSU/user-management/configs/app_configs"
 	v1 "github.com/PARKNAMSU/user-management/src/router/v1"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )
 
 var (
-	_    = godotenv.Load()
-	app  *fiber.App
-	port = fmt.Sprintf(":%s", os.Getenv("PORT"))
+	_   = godotenv.Load()
+	app *fiber.App
 )
 
 func AppInit() {
@@ -38,13 +36,9 @@ func AppInit() {
 	})
 
 	app.Use(func(ctx *fiber.Ctx) error {
-		ctx.Accepts("html")                           // "html"
-		ctx.Accepts("text/html")                      // "text/html"
-		ctx.Accepts("json", "text")                   // "json"
-		ctx.Accepts("application/json")               // "application/json"
-		ctx.Accepts("text/plain", "application/json") // "application/json", due to quality
-		ctx.Accepts("image/png")                      // ""
-		ctx.Accepts("png")                            // "", due to */* without q factor 0 is Not Acceptable
+		for _, accept := range app_configs.CtxAcceptList {
+			ctx.Accepts(accept...)
+		}
 		return ctx.Next()
 	})
 
@@ -54,9 +48,9 @@ func AppInit() {
 
 	v1.Routing(app)
 
-	log.Println(port)
+	log.Println(app_configs.Port)
 
-	err := app.Listen(port)
+	err := app.Listen(app_configs.Port)
 
 	if err != nil {
 		app.Listen(":80")

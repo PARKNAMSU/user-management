@@ -1,3 +1,5 @@
+VERSION 0.0.1
+
 # User Management System
 
 ## 초기세팅

@@ -37,3 +37,23 @@ func MysqlMasterOption() ConnectOptions {
 		Database: os.Getenv("MYSQL_MASTER_DATABASE"),
 	}
 }
+
+func PostgresSlaveOption() ConnectOptions {
+	return ConnectOptions{
+		Engine:   "postgres",
+		User:     os.Getenv("PG_SLAVE_USER"),
+		Password: os.Getenv("PG_SLAVE_PASSWORD"),
+		Host:     os.Getenv("PG_SLAVE_HOST"),
+		Database: os.Getenv("PG_SLAVE_DATABASE"),
+	}
+}
+
+func PostgresMasterOption() ConnectOptions {
+	return ConnectOptions{
+		Engine:   "postgres",
+		User:     os.Getenv("PG_MASTER_USER"),
+		Password: os.Getenv("PG_MASTER_PASSWORD"),
+		Host:     os.Getenv("PG_MASTER_HOST"),
+		Database: os.Getenv("PG_MASTER_DATABASE"),
+	}
+}

@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/PARKNAMSU/user-management/configs/app_configs"
-	v1 "github.com/PARKNAMSU/user-management/src/router/v1"
+	user_router "github.com/PARKNAMSU/user-management/src/user/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )
@@ -46,7 +46,9 @@ func AppInit() {
 		return ctx.SendString("alive")
 	})
 
-	v1.Routing(app)
+	app.Route("/v1", func(router fiber.Router) {
+		user_router.UserRouterV1(router)
+	})
 
 	log.Println(app_configs.Port)
 

@@ -1,4 +1,4 @@
-package database
+package db_tool
 
 import (
 	"errors"
@@ -8,39 +8,40 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type DBName = string
-
 var (
-	SlaveDB  DBName = "SLAVE_DB"
-	MasterDB DBName = "Master_DB"
+	mysqlSlave  *sqlx.DB
+	mysqlMaster *sqlx.DB
 )
 
-var (
-	slaveDB  *sqlx.DB
-	masterDB *sqlx.DB
-)
+type mysqlDB struct {
+	name DBName
+}
 
-func Connector(db DBName) (*sqlx.DB, error) {
-	switch db {
+func (d *mysqlDB) Connector() (*sqlx.DB, error) {
+	switch d.name {
 	case SlaveDB:
 		{
-			if slaveDB != nil {
-				return slaveDB, nil
+			if mysqlSlave != nil {
+				return mysqlSlave, nil
 			}
-			return slaveDBConnector()
+			db, err := mysqlSlaveConnector()
+			mysqlSlave = db
+			return db, err
 		}
 	case MasterDB:
 		{
-			if masterDB != nil {
-				return masterDB, nil
+			if mysqlMaster != nil {
+				return mysqlMaster, nil
 			}
-			return masterDBConnector()
+			db, err := mysqlMasterConnector()
+			mysqlMaster = db
+			return db, err
 		}
 	}
 	return nil, errors.New("not supported db")
 }
 
-func slaveDBConnector() (*sqlx.DB, error) {
+func mysqlSlaveConnector() (*sqlx.DB, error) {
 	option := db_configs.MysqlSlaveOption()
 	db, dbErr := sqlx.Connect(option.Engine, option.User+":"+option.Password+"@tcp("+option.Host+")/"+option.Database+"?charset=utf8mb4&parseTime=True&maxAllowedPacket=0")
 	if dbErr != nil {
@@ -53,8 +54,8 @@ func slaveDBConnector() (*sqlx.DB, error) {
 	return db, nil
 }
 
-func masterDBConnector() (*sqlx.DB, error) {
-	option := db_configs.MysqlSlaveOption()
+func mysqlMasterConnector() (*sqlx.DB, error) {
+	option := db_configs.MysqlMasterOption()
 	db, dbErr := sqlx.Connect(option.Engine, option.User+":"+option.Password+"@tcp("+option.Host+")/"+option.Database+"?charset=utf8mb4&parseTime=True&maxAllowedPacket=0")
 	if dbErr != nil {
 		return nil, dbErr
